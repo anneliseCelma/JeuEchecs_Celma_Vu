@@ -41,7 +41,10 @@ public class Position {
      * @return boolean true si les 2 positions sont voisines, false sinon.
      */
     public boolean estVoisineDe(Position p) {
-        throw new NotImplementedException();
+        int posHori = Math.abs(this.colonne - p.colonne);
+        int posVert = Math.abs(this.ligne - p.ligne);
+
+        return (posHori <= 1 && posVert <= 1);
     }
     /**
      * Indique si 2 positions sont sur la même ligne sur un échiquier.
@@ -50,7 +53,9 @@ public class Position {
      * @return boolean true si les 2 positions sont sur la même ligne, false sinon.
      */
     public boolean estSurLaMemeLigneQue(Position p) {
-        throw new NotImplementedException();
+        int posLigne = Math.abs(this.ligne - p.ligne);
+
+        return (posLigne == 0);
     }
     /**
      * Indique si 2 positions sont sur la même colonne sur un échiquier.
@@ -59,7 +64,9 @@ public class Position {
      * @return boolean true si les 2 positions sont sur la même colonne, false sinon.
      */
     public boolean estSurLaMemeColonneQue(Position p) {
-        throw new NotImplementedException();
+        int posColonne = Math.abs(this.colonne - p.colonne);
+
+        return (posColonne == 0);
     }
     /**
      * Indique si 2 positions sont sur la même diagonale sur un échiquier.
@@ -68,6 +75,9 @@ public class Position {
      * @return boolean true si les 2 positions sont sur la même diagonale, false sinon.
      */
     public boolean estSurLaMemeDiagonaleQue(Position p) {
-        throw new NotImplementedException();
+        int posLigne = Math.abs(this.ligne - p.ligne);
+        int posColonne = Math.abs(this.colonne - p.colonne);
+
+        return (posLigne == posColonne);
     }
 }
