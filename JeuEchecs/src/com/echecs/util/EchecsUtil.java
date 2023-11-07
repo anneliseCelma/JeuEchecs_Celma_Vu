@@ -66,7 +66,6 @@ public class EchecsUtil {
      * @return true, si p est une position valide de l'échiquier, false sinon
      */
     public static boolean positionValide(Position p) {
-        return p.getLigne()>=1 && p.getLigne()<=8
-                && p.getColonne()>='a' && p.getColonne()<='h';
+        return p.getLigne()>=1 && p.getLigne()<=8 && p.getColonne()>='a' && p.getColonne()<='h';
     }
 }

@@ -4,6 +4,9 @@ import com.echecs.pieces.Piece;
 import com.echecs.util.EchecsUtil;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import static com.echecs.util.EchecsUtil.getPosition;
+import static com.echecs.util.EchecsUtil.positionValide;
+
 /**
  * Représente une partie de jeu d'échecs. Orcheste le déroulement d'une partie :
  * déplacement des pièces, vérification d'échec, d'échec et mat,...
@@ -61,7 +64,12 @@ public class PartieEchecs {
      * @return boolean true, si le déplacement a été effectué avec succès, false sinon
      */
     public boolean deplace(Position initiale, Position finale) {
-         throw new NotImplementedException();
+
+        if(positionValide(initiale) && positionValide(finale))
+         if(initiale.estSurLaMemeColonneQue(finale) || initiale.estSurLaMemeLigneQue(finale) || initiale.estSurLaMemeDiagonaleQue(finale))
+             if(!initiale.equals(finale))
+                 return true;
+        return false;
     }
 
     /**
