@@ -8,6 +8,8 @@ public class Roi extends Piece{
     }
     @Override
     public boolean peutSeDeplacer(Position pos1, Position pos2, Piece[][] echiquier) {
+        if(pos1.estVoisineDe(pos2))
+            return true;
         return false;
     }
 }

@@ -1,11 +1,10 @@
 package com.echecs;
 
-import com.echecs.pieces.Piece;
+import com.echecs.pieces.*;
 import com.echecs.util.EchecsUtil;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import static com.echecs.util.EchecsUtil.getPosition;
-import static com.echecs.util.EchecsUtil.positionValide;
+import static com.echecs.util.EchecsUtil.*;
 
 /**
  * Représente une partie de jeu d'échecs. Orcheste le déroulement d'une partie :
@@ -37,7 +36,32 @@ public class PartieEchecs {
     public PartieEchecs() {
         echiquier = new Piece[8][8];
         //Placement des pièces :
+        echiquier[7][0] = new Tour('b');
+        echiquier[7][7] = new Tour('b');
+        echiquier[0][0] = new Tour('n');
+        echiquier[0][7] = new Tour('n');
 
+        for(int i = 0; i < echiquier.length; i++)
+            echiquier[6][i] = new Pion('b');
+
+        for(int i = 0; i < echiquier.length; i++)
+            echiquier[1][i] = new Pion('n');
+
+        echiquier[0][1] = new Cavalier('n');
+        echiquier[0][6] = new Cavalier('n');
+        echiquier[7][1] = new Cavalier('b');
+        echiquier[7][6] = new Cavalier('b');
+
+        echiquier[0][2] = new Fou('n');
+        echiquier[0][5] = new Fou('n');
+        echiquier[7][2] = new Fou('b');
+        echiquier[7][5] = new Fou('b');
+
+        echiquier[0][3] = new Dame('n');
+        echiquier[7][3] = new Dame('b');
+
+        echiquier[0][4] = new Roi('n');
+        echiquier[7][4] = new Roi('b');
     }
 
     /**
@@ -64,10 +88,11 @@ public class PartieEchecs {
      * @return boolean true, si le déplacement a été effectué avec succès, false sinon
      */
     public boolean deplace(Position initiale, Position finale) {
-
+        Piece piece = echiquier[indiceLigne(initiale)][indiceColonne(initiale)];
         if(positionValide(initiale) && positionValide(finale))
-         if(initiale.estSurLaMemeColonneQue(finale) || initiale.estSurLaMemeLigneQue(finale) || initiale.estSurLaMemeDiagonaleQue(finale))
-             if(!initiale.equals(finale))
+            if(piece == null)
+                if(piece.getCouleur() == getCouleurJoueur1())
+                    if(initiale.estSurLaMemeColonneQue(finale) || initiale.estSurLaMemeLigneQue(finale) || initiale.estSurLaMemeDiagonaleQue(finale))
                  return true;
         return false;
     }
