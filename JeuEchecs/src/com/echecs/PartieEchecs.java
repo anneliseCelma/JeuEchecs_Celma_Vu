@@ -34,6 +34,7 @@ public class PartieEchecs {
      * Répartit au hasard les couleurs n et b entre les 2 joueurs.
      */
     public PartieEchecs() {
+        tour = 'b';
         echiquier = new Piece[8][8];
         //Placement des pièces :
         echiquier[7][0] = new Tour('b');
