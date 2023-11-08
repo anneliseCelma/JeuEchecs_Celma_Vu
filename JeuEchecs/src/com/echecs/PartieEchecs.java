@@ -111,7 +111,56 @@ public class PartieEchecs {
      * si le roi blanc est en échec, tout autre caractère, sinon.
      */
     public char estEnEchec() {
-            throw new NotImplementedException();
+        Piece piece;
+        Position posRoiNoir = null;
+        Position posRoiBlanc = null;
+        boolean roiNoirEchec = false;
+        boolean roiBlancEchec = false;
+
+            for(int i = 0; i < echiquier.length; i++)
+                for(int j = 0; j < echiquier[i].length; i++) {
+                    piece = echiquier[i][j];
+                    if (piece instanceof Roi) {
+                        if(piece.getCouleur() == 'n')
+                            posRoiNoir = getPosition((byte) i, (byte) j);
+                        if(piece.getCouleur() == 'b')
+                            posRoiBlanc = getPosition((byte) i, (byte) j);
+                    }
+                }
+
+        if (!roiNoirEchec) {
+            for (int i = 0; i < echiquier.length; i++) {
+                for (int j = 0; j < echiquier[i].length; j++) {
+                    piece = echiquier[i][j];
+                    if (piece != null && piece.getCouleur() == 'b') {
+                        Position positionPiece = EchecsUtil.getPosition((byte) i, (byte) j);
+                        if (piece.peutSeDeplacer(positionPiece, posRoiNoir, echiquier) && !roiNoirEchec) {
+                            roiNoirEchec = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!roiBlancEchec) {
+        for (int i = 0; i < echiquier.length; i++) {
+            for (int j = 0; j < echiquier[i].length; j++) {
+                piece = echiquier[i][j];
+                if (piece != null && piece.getCouleur() == 'n') {
+                    Position positionPiece = EchecsUtil.getPosition((byte) i, (byte) j);
+                    if (piece.peutSeDeplacer(positionPiece, posRoiBlanc, echiquier) && !roiBlancEchec) {
+                        roiBlancEchec = true;
+                    }
+                }
+            }
+        }
+        }
+
+        if(roiNoirEchec)
+            return 'n';
+        if(roiBlancEchec)
+            return 'b';
+        return 0;
     }
     /**
      * Retourne la couleur n ou b du joueur qui a la main.
