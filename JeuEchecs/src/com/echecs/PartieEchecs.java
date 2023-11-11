@@ -102,6 +102,8 @@ public class PartieEchecs {
             return false;
         if (echiquier[indiceLigne(finale)][indiceColonne(finale)].getCouleur() == getTour())
             return false;
+        if(estEnEchec() == getTour())
+            return false;
         if (piece.peutSeDeplacer(initiale, finale, echiquier)) {
             if (piece.equals(roi))
                 roque = false;
