@@ -23,11 +23,14 @@ public class PartieEchecs {
     private Piece[][] echiquier;
     private String aliasJoueur1, aliasJoueur2;
     private char couleurJoueur1, couleurJoueur2;
-
+    
+    private Roi roi;
+    private boolean roque = true;
     /**
      * La couleur de celui à qui c'est le tour de jouer (n ou b).
      */
     private char tour = 'b'; //Les blancs commencent toujours
+    
     /**
      * Crée un échiquier de jeu d'échecs avec les pièces dans leurs positions
      * initiales de début de partie.
@@ -41,63 +44,73 @@ public class PartieEchecs {
         echiquier[7][7] = new Tour('b');
         echiquier[0][0] = new Tour('n');
         echiquier[0][7] = new Tour('n');
-
-        for(int i = 0; i < echiquier.length; i++)
+        
+        for (int i = 0; i < echiquier.length; i++)
             echiquier[6][i] = new Pion('b');
-
-        for(int i = 0; i < echiquier.length; i++)
+        
+        for (int i = 0; i < echiquier.length; i++)
             echiquier[1][i] = new Pion('n');
-
+        
         echiquier[0][1] = new Cavalier('n');
         echiquier[0][6] = new Cavalier('n');
         echiquier[7][1] = new Cavalier('b');
         echiquier[7][6] = new Cavalier('b');
-
+        
         echiquier[0][2] = new Fou('n');
         echiquier[0][5] = new Fou('n');
         echiquier[7][2] = new Fou('b');
         echiquier[7][5] = new Fou('b');
-
+        
         echiquier[0][3] = new Dame('n');
         echiquier[7][3] = new Dame('b');
-
+        
         echiquier[0][4] = new Roi('n');
         echiquier[7][4] = new Roi('b');
     }
-
+    
     /**
      * Change la main du jeu (de n à b ou de b à n).
      */
     public void changerTour() {
-        if (tour=='b')
+        if (tour == 'b')
             tour = 'n';
         else
             tour = 'b';
     }
+    
     /**
      * Tente de déplacer une pièce d'une position à une autre sur l'échiquier.
      * Le déplacement peut échouer pour plusieurs raisons, selon les règles du
      * jeu d'échecs. Par exemples :
-     *  Une des positions n'existe pas;
-     *  Il n'y a pas de pièce à la position initiale;
-     *  La pièce de la position initiale ne peut pas faire le mouvement;
-     *  Le déplacement met en échec le roi de la même couleur que la pièce.
+     * Une des positions n'existe pas;
+     * Il n'y a pas de pièce à la position initiale;
+     * La pièce de la position initiale ne peut pas faire le mouvement;
+     * Le déplacement met en échec le roi de la même couleur que la pièce.
      *
      * @param initiale Position la position initiale
-     * @param finale Position la position finale
-     *
+     * @param finale   Position la position finale
      * @return boolean true, si le déplacement a été effectué avec succès, false sinon
      */
     public boolean deplace(Position initiale, Position finale) {
         Piece piece = echiquier[indiceLigne(initiale)][indiceColonne(initiale)];
-        if(positionValide(initiale) && positionValide(finale))
-            if(piece == null)
-                if(piece.getCouleur() == getCouleurJoueur1())
-                    if(initiale.estSurLaMemeColonneQue(finale) || initiale.estSurLaMemeLigneQue(finale) || initiale.estSurLaMemeDiagonaleQue(finale))
-                 return true;
+        
+        if (!positionValide(initiale) || !positionValide(finale))
+            return false;
+        if (piece == null)
+            return false;
+        if (piece.getCouleur() != getTour())
+            return false;
+        if (echiquier[indiceLigne(finale)][indiceColonne(finale)].getCouleur() == getTour())
+            return false;
+        if (piece.peutSeDeplacer(initiale, finale, echiquier)) {
+            if (piece.equals(roi))
+                roque = false;
+            return true;
+        }
+        
         return false;
     }
-
+    
     /**
      * Vérifie si un roi est en échec et, si oui, retourne sa couleur sous forme
      * d'un caractère n ou b.
@@ -116,18 +129,18 @@ public class PartieEchecs {
         Position posRoiBlanc = null;
         boolean roiNoirEchec = false;
         boolean roiBlancEchec = false;
-
-            for(int i = 0; i < echiquier.length; i++)
-                for(int j = 0; j < echiquier[i].length; i++) {
-                    piece = echiquier[i][j];
-                    if (piece instanceof Roi) {
-                        if(piece.getCouleur() == 'n')
-                            posRoiNoir = getPosition((byte) i, (byte) j);
-                        if(piece.getCouleur() == 'b')
-                            posRoiBlanc = getPosition((byte) i, (byte) j);
-                    }
+        
+        for (int i = 0; i < echiquier.length; i++)
+            for (int j = 0; j < echiquier[i].length; i++) {
+                piece = echiquier[i][j];
+                if (piece instanceof Roi) {
+                    if (piece.getCouleur() == 'n')
+                        posRoiNoir = getPosition((byte) i, (byte) j);
+                    if (piece.getCouleur() == 'b')
+                        posRoiBlanc = getPosition((byte) i, (byte) j);
                 }
-
+            }
+        
         if (!roiNoirEchec) {
             for (int i = 0; i < echiquier.length; i++) {
                 for (int j = 0; j < echiquier[i].length; j++) {
@@ -141,27 +154,28 @@ public class PartieEchecs {
                 }
             }
         }
-
+        
         if (!roiBlancEchec) {
-        for (int i = 0; i < echiquier.length; i++) {
-            for (int j = 0; j < echiquier[i].length; j++) {
-                piece = echiquier[i][j];
-                if (piece != null && piece.getCouleur() == 'n') {
-                    Position positionPiece = EchecsUtil.getPosition((byte) i, (byte) j);
-                    if (piece.peutSeDeplacer(positionPiece, posRoiBlanc, echiquier) && !roiBlancEchec) {
-                        roiBlancEchec = true;
+            for (int i = 0; i < echiquier.length; i++) {
+                for (int j = 0; j < echiquier[i].length; j++) {
+                    piece = echiquier[i][j];
+                    if (piece != null && piece.getCouleur() == 'n') {
+                        Position positionPiece = EchecsUtil.getPosition((byte) i, (byte) j);
+                        if (piece.peutSeDeplacer(positionPiece, posRoiBlanc, echiquier) && !roiBlancEchec) {
+                            roiBlancEchec = true;
+                        }
                     }
                 }
             }
         }
-        }
-
-        if(roiNoirEchec)
+        
+        if (roiNoirEchec)
             return 'n';
-        if(roiBlancEchec)
+        if (roiBlancEchec)
             return 'b';
         return 0;
     }
+    
     /**
      * Retourne la couleur n ou b du joueur qui a la main.
      *
@@ -170,43 +184,55 @@ public class PartieEchecs {
     public char getTour() {
         return tour;
     }
+    
     /**
      * Retourne l'alias du premier joueur.
+     *
      * @return String alias du premier joueur.
      */
     public String getAliasJoueur1() {
         return aliasJoueur1;
     }
+    
     /**
      * Modifie l'alias du premier joueur.
+     *
      * @param aliasJoueur1 String nouvel alias du premier joueur.
      */
     public void setAliasJoueur1(String aliasJoueur1) {
         this.aliasJoueur1 = aliasJoueur1;
     }
+    
     /**
      * Retourne l'alias du deuxième joueur.
+     *
      * @return String alias du deuxième joueur.
      */
     public String getAliasJoueur2() {
         return aliasJoueur2;
     }
+    
     /**
      * Modifie l'alias du deuxième joueur.
+     *
      * @param aliasJoueur2 String nouvel alias du deuxième joueur.
      */
     public void setAliasJoueur2(String aliasJoueur2) {
         this.aliasJoueur2 = aliasJoueur2;
     }
+    
     /**
      * Retourne la couleur n ou b du premier joueur.
+     *
      * @return char couleur du premier joueur.
      */
     public char getCouleurJoueur1() {
         return couleurJoueur1;
     }
+    
     /**
      * Retourne la couleur n ou b du deuxième joueur.
+     *
      * @return char couleur du deuxième joueur.
      */
     public char getCouleurJoueur2() {
